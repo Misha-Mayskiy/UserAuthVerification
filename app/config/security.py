@@ -74,11 +74,12 @@ async def get_token_user(token: str, db):
         user_token_id = str_decode(payload.get('r'))
         user_id = str_decode(payload.get('sub'))
         access_key = payload.get('a')
-        user_token = db.query(UserToken).options(joinedload(UserToken.user)).filter(UserToken.access_key == access_key,
-                                                 UserToken.id == user_token_id,
-                                                 UserToken.user_id == user_id,
-                                                 UserToken.expires_at > datetime.utcnow()
-                                                 ).first()
+        user_token = db.query(UserToken).options(joinedload(UserToken.user)).filter(
+                                                                                    UserToken.access_key == access_key,
+                                                                                    UserToken.id == user_token_id,
+                                                                                    UserToken.user_id == user_id,
+                                                                                    UserToken.expires_at > datetime.utcnow()
+                                                                                    ).first()
         if user_token:
             return user_token.user
     return None
