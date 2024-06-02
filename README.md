@@ -1,7 +1,4 @@
-# Auto Generating Migrations (FastAPI + SQLAlchemy + Alembic)
-
-### Video Tutorial
-[Click here](https://youtu.be/HuOG7VS8qvE)
+# FastAPI + SQLAlchemy + Alembic
 
 ### Installation & Configuration
 - Install the Docker Desktop and Start It
@@ -16,7 +13,6 @@ MYSQL_PASSWORD=Describly&123
 MYSQL_DB=fastapi
 MYSQL_PORT=3306
 ```
-You do not need to change anything here, but if you would like to change the username, password or database name, you can modify it at this point in the `.env` file attached to this project. 
 
 ### Building the Project
 - We can start building our projects by running `docker-compose build`
@@ -42,4 +38,3 @@ docker-compose run fastapi-service /bin/sh -c "alembic downgrade -1"
 - API Documentation [http://localhost:8000/docs](http://localhost:8000/docs)
 - Database Access [http://localhost:8080](http://localhost:8080) - use the above detail to login.
 - Mailpit [http://localhost:8025](http://localhost:8025)
-# fastapi-sqlalchemy-alembic
