@@ -15,7 +15,8 @@ def test_fetch_me(client, user, test_session):
     response = client.get("/users/me", headers=headers)
     assert response.status_code == 200
     assert response.json()['email'] == user.email
-    
+
+
 def test_fetch_me_invalid_token(client, user, test_session):
     data = _generate_tokens(user, test_session)
     headers = {
@@ -25,7 +26,7 @@ def test_fetch_me_invalid_token(client, user, test_session):
     assert response.status_code == 401
     assert 'email' not in response.json()
     assert 'id' not in response.json()
-    
+
 
 def test_fetch_user_detail_by_id(auth_client, user):
     response = auth_client.get(f"/users/{user.id}")

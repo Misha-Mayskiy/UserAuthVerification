@@ -17,7 +17,8 @@ def test_refresh_token(client, user, test_session):
     assert response.status_code == 200
     assert 'access_token' in response.json()
     assert 'refresh_token' in response.json()
-    
+
+
 def test_refresh_token_with_invalid_token(client, user, test_session):
     data = _generate_tokens(user, test_session)
     header = {

@@ -31,3 +31,10 @@ class UserToken(Base):
     expires_at = Column(DateTime, nullable=False)
 
     user = relationship("User", back_populates="tokens")
+
+
+class UserExample(Base):
+    __tablename__ = "user_examples"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = mapped_column(ForeignKey('users.id'))
+    example = Column(String(255))

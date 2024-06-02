@@ -6,6 +6,7 @@
 """
 from app.config.email import fm
 
+
 def test_user_can_send_forgot_password_request(client, user):
     fm.config.SUPPRESS_SEND = 0
     data = {'email': user.email}

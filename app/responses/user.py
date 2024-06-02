@@ -10,8 +10,7 @@ class UserResponse(BaseResponse):
     email: EmailStr
     is_active: bool
     created_at: Union[str, None, datetime] = None
-    
-    
+
 
 class LoginResponse(BaseModel):
     access_token: str
