@@ -1,17 +1,14 @@
-# FastAPI Authentication APIs - Test Driven Development (TDD)
-
-### Video Tutorial
-[Click here](#)
+# FastAPI Authentification/Verification + MySQL
 
 ### APIs 
 ![ALT TEXT](https://github.com/Describly/fastapi-tdd-user-authentication/blob/main/screenshot.png)
 
 ### Installation & Configuration
-- Install the Docker Desktop and Start It
-- Clone this repository in your local machine by typing `git@github.com:Describly/fastapi-tdd-user-authentication.git`. 
+- Install the Docker Desktop and Start It.
+- Clone this repository in your local machine.
 - Open the Terminal and navigate to the project folder.
 - Run `docker volume create describly_mysql_data` to create a docker volue in you machine. Required to persist the mysql data.
-- Below will be your mysql connection details
+- Below will be your mysql connection details.
 ```bash
 MYSQL_HOST=mysql
 MYSQL_USER=root
@@ -19,7 +16,6 @@ MYSQL_PASSWORD=Describly&123
 MYSQL_DB=fastapi
 MYSQL_PORT=3306
 ```
-You do not need to change anything here, but if you would like to change the username, password or database name, you can modify it at this point in the `.env` file attached to this project. 
 
 ### Building the Project
 - We can start building our projects by running `docker-compose build`
@@ -60,5 +56,3 @@ docker-compose run fastapi-service /bin/sh -c "pytest --log-cli-level=INFO"
 ```
 docker-compose run fastapi-service /bin/sh -c "pytest tests/test_folder/test_file.py"
 ```
-
-# fastapi-tdd-user-authentication
