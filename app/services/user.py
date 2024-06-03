@@ -4,6 +4,7 @@ from sqlalchemy.orm import joinedload
 from fastapi import HTTPException
 from app.config.security import generate_token, get_token_payload, hash_password, is_password_strong_enough, load_user, \
     str_decode, str_encode, verify_password
+from app.generations.generation_main import generate_example, check_answer
 from app.models.user import User, UserToken
 from app.services.email import send_account_activation_confirmation_email, send_account_verification_email, \
     send_password_reset_email
@@ -188,3 +189,11 @@ async def fetch_user_detail(pk, session):
     if user:
         return user
     raise HTTPException(status_code=400, detail="User does not exists.")
+
+
+async def get_example(data):
+    return generate_example(data.difficulty, data.example_type)
+
+
+async def check_example_answer(data):
+    return check_answer(data.user_answer, data.correct_answer)

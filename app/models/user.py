@@ -16,6 +16,7 @@ class User(Base):
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
     tokens = relationship("UserToken", back_populates="user")
+    examples = relationship("UserExample", back_populates="user1")
 
     def get_context_string(self, context: str):
         return f"{context}{self.password[-6:]}{self.updated_at.strftime('%m%d%Y%H%M%S')}".strip()
@@ -38,3 +39,5 @@ class UserExample(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = mapped_column(ForeignKey('users.id'))
     example = Column(String(255))
+
+    user1 = relationship("User", back_populates="examples")

@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.config.database import get_session
 from app.responses.user import UserResponse, LoginResponse
-from app.schemas.user import RegisterUserRequest, ResetRequest, VerifyUserRequest, EmailRequest
+from app.schemas.user import RegisterUserRequest, ResetRequest, VerifyUserRequest, EmailRequest, \
+    FiltersForGenerationExampleRequest, AnswerToExample
 from app.services import user
 from app.config.security import get_current_user, oauth2_scheme
 
@@ -57,6 +58,18 @@ async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks,
                           session: Session = Depends(get_session)):
     await user.email_forgot_password_link(data, background_tasks, session)
     return JSONResponse({"message": "A email with password reset link has been sent to you."})
+
+
+@guest_router.post("/get-example", status_code=status.HTTP_200_OK)
+async def get_example(data: FiltersForGenerationExampleRequest):
+    example, answer = await user.get_example(data)
+    return JSONResponse({"example": example, "correct_answer": str(answer)})
+
+
+@guest_router.post("/get-answer", status_code=status.HTTP_200_OK)
+async def get_example(data: AnswerToExample):
+    right_or_not = await user.check_example_answer(data)
+    return JSONResponse({"message": right_or_not, "correct_answer": data.correct_answer})
 
 
 @guest_router.put("/reset-password", status_code=status.HTTP_200_OK)

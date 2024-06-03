@@ -10,7 +10,7 @@ from app.config.database import get_session
 from app.config.settings import get_settings
 from app.models.user import UserToken
 
-SPECIAL_CHARACTERS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>']
+SPECIAL_CHARACTERS = ['@', '#', '$', '%', '=', ':', '?', '!', '.', '/', '|', '~', '>', '*']
 
 settings = get_settings()
 

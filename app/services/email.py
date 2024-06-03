@@ -25,8 +25,8 @@ async def send_account_verification_email(user: User, background_tasks: Backgrou
         context=data,
         background_tasks=background_tasks
     )
-    
-    
+
+
 async def send_account_activation_confirmation_email(user: User, background_tasks: BackgroundTasks):
     data = {
         'app_name': settings.APP_NAME,
@@ -41,7 +41,8 @@ async def send_account_activation_confirmation_email(user: User, background_task
         context=data,
         background_tasks=background_tasks
     )
-    
+
+
 async def send_password_reset_email(user: User, background_tasks: BackgroundTasks):
     from app.config.security import hash_password
     string_context = user.get_context_string(context=FORGOT_PASSWORD)

@@ -15,4 +15,4 @@ app = create_application()
 
 @app.get("/")
 async def root():
-    return {"message": "Hi, server working. Awesome - Your setup is done & working."}
+    return {"message": "Hi, server working. Awesome - Your setup is done."}

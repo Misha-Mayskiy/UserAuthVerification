@@ -12,7 +12,7 @@ load_dotenv(dotenv_path=env_path)
 class Settings(BaseSettings):
 
     # App
-    APP_NAME:  str = os.environ.get("APP_NAME", "FastAPI")
+    APP_NAME:  str = os.environ.get("APP_NAME", "Numerica")
     DEBUG: bool = bool(os.environ.get("DEBUG", False))
     
     # FrontEnd Application
