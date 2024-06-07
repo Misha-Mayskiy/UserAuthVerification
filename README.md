@@ -1,7 +1,7 @@
 # FastAPI Authentification/Verification + MySQL
 
 ### APIs 
-![ALT TEXT](https://github.com/Describly/fastapi-tdd-user-authentication/blob/main/screenshot.png)
+![ALT TEXT](https://imgur.com/a/hzRtYgi)
 
 ### Installation & Configuration
 - Install the Docker Desktop and Start It.
