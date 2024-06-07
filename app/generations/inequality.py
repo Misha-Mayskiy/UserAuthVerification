@@ -4,17 +4,17 @@ import sympy as sp
 
 def generate_inequality(level):
     signs = ['<', '>', '<=', '>=']
-    if level == 'легкий':
+    if level == 1:
         num = random.randint(1, 10)
         result = random.randint(1, 20)
         sign = random.choice(signs)
         return f"x + {num} {sign} {result}", f"x {sign} {result - num}"
-    elif level == 'средний':
+    elif level == 2:
         num = random.randint(2, 5)
         result = random.randint(10, 50)
         sign = random.choice(signs)
         return f"x * {num} {sign} {result}", f"x {sign} {result // num}"
-    else:  # сложный
+    else:  # 3
         a = random.randint(1, 10)
         b = random.randint(1, 10)
         c = random.randint(1, 10)

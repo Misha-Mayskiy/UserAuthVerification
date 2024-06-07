@@ -24,9 +24,11 @@ async def create_user_account(data, session, background_tasks):
         raise HTTPException(status_code=400, detail="Please provide a strong password.")
 
     user = User()
-    user.name = data.name
+    user.name = "Username"
     user.email = data.email
     user.password = hash_password(data.password)
+    user.karma = 0
+    user.level = 0
     user.is_active = False
     user.updated_at = datetime.utcnow()
     session.add(user)
@@ -100,7 +102,7 @@ async def get_refresh_token(refresh_token, session):
         UserToken.access_key == access_key,
         UserToken.user_id == user_id,
         UserToken.expires_at > datetime.utcnow()
-        ).first()
+    ).first()
     if not user_token:
         raise HTTPException(status_code=400, detail="Invalid Request.")
 
@@ -184,6 +186,23 @@ async def reset_user_password(data, session):
     # Notify user that password has been updated
 
 
+async def change_user_name(data, session):
+    user = await load_user(data.email, session)
+
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid request")
+    if not user.verified_at:
+        raise HTTPException(status_code=400, detail="Invalid request")
+    if not user.is_active:
+        raise HTTPException(status_code=400, detail="Invalid request")
+
+    user.name = data.name
+    user.updated_at = datetime.now()
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+
 async def fetch_user_detail(pk, session):
     user = session.query(User).filter(User.id == pk).first()
     if user:
@@ -192,8 +211,36 @@ async def fetch_user_detail(pk, session):
 
 
 async def get_example(data):
-    return generate_example(data.difficulty, data.example_type)
+    return generate_example(data.difficulty,
+                            data.example_type,
+                            (" ".join(data.operations)).split() if data.operations is not None else None)
 
 
-async def check_example_answer(data):
-    return check_answer(data.user_answer, data.correct_answer)
+async def check_example_answer(data, session):
+    user = await load_user(data.email, session)
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid request")
+    if not user.verified_at:
+        raise HTTPException(status_code=400, detail="Invalid request")
+    if not user.is_active:
+        raise HTTPException(status_code=400, detail="Invalid request")
+
+    is_answer_correct = check_answer(data.user_answer, data.correct_answer)
+
+    if is_answer_correct:
+        user.karma += 1
+        if user.karma < 21:
+            user.level = 0
+        elif user.karma < 41:
+            user.level = 1
+        elif user.karma < 81:
+            user.level = 2
+        else:
+            user.level = 3
+
+    karma_user = user.karma
+    level_user = user.level
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return is_answer_correct, karma_user, level_user

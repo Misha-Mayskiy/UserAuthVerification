@@ -1,13 +1,14 @@
 import random
 
 
-def generate_numerical(level):
-    operations = ['+', '-', '*', '/']
-    if level == 'легкий':
+def generate_numerical(level, operations=None):
+    if operations is None:
+        operations = ['+', '-', '*', '/']
+    if level == 1:
         num1, num2 = random.randint(1, 10), random.randint(1, 10)
-    elif level == 'средний':
+    elif level == 2:
         num1, num2 = random.randint(10, 50), random.randint(10, 50)
-    else:  # сложный
+    else:  # 3
         num1, num2 = random.randint(50, 100), random.randint(50, 100)
     operation = random.choice(operations)
     question = f"{num1} {operation} {num2}"

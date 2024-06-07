@@ -12,6 +12,9 @@ from app.models.user import UserToken
 
 SPECIAL_CHARACTERS = ['@', '#', '$', '%', '=', ':', '?', '!', '.', '/', '|', '~', '>', '*']
 
+# LEVELS_ACHIEVEMENTS
+LEVELS = ["Нуб-математик", "Теоретик-математик", "Продвинутый-математик", "Профи-математик"]
+
 settings = get_settings()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

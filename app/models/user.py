@@ -7,16 +7,17 @@ from sqlalchemy.orm import mapped_column, relationship
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(150))
+    name = Column(String(150), nullable=False, default="user" + str(id))
     email = Column(String(255), unique=True, index=True)
     password = Column(String(100))
+    karma = Column(Integer, nullable=False, default=0)
+    level = Column(Integer, nullable=False, default=0)
     is_active = Column(Boolean, default=False)
     verified_at = Column(DateTime, nullable=True, default=None)
     updated_at = Column(DateTime, nullable=True, default=None, onupdate=datetime.now)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
 
     tokens = relationship("UserToken", back_populates="user")
-    examples = relationship("UserExample", back_populates="user1")
 
     def get_context_string(self, context: str):
         return f"{context}{self.password[-6:]}{self.updated_at.strftime('%m%d%Y%H%M%S')}".strip()
@@ -34,10 +35,10 @@ class UserToken(Base):
     user = relationship("User", back_populates="tokens")
 
 
-class UserExample(Base):
-    __tablename__ = "user_examples"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = mapped_column(ForeignKey('users.id'))
-    example = Column(String(255))
-
-    user1 = relationship("User", back_populates="examples")
+# class UserExample(Base):
+#     __tablename__ = "user_examples"
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     user_id = mapped_column(ForeignKey('users.id'))
+#     example = Column(String(255))
+#
+#     user1 = relationship("User", back_populates="examples")

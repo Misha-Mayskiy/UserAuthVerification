@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 from app.config.database import get_session
 from app.responses.user import UserResponse, LoginResponse
 from app.schemas.user import RegisterUserRequest, ResetRequest, VerifyUserRequest, EmailRequest, \
-    FiltersForGenerationExampleRequest, AnswerToExample
+    FiltersForGenerationExampleRequest, AnswerToExample, ChangeName
 from app.services import user
-from app.config.security import get_current_user, oauth2_scheme
+from app.config.security import get_current_user, oauth2_scheme, LEVELS
 
 user_router = APIRouter(
     prefix="/users",
@@ -60,22 +60,31 @@ async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks,
     return JSONResponse({"message": "A email with password reset link has been sent to you."})
 
 
-@guest_router.post("/get-example", status_code=status.HTTP_200_OK)
+@auth_router.post("/get-example", status_code=status.HTTP_200_OK)
 async def get_example(data: FiltersForGenerationExampleRequest):
     example, answer = await user.get_example(data)
     return JSONResponse({"example": example, "correct_answer": str(answer)})
 
 
-@guest_router.post("/get-answer", status_code=status.HTTP_200_OK)
-async def get_example(data: AnswerToExample):
-    right_or_not = await user.check_example_answer(data)
-    return JSONResponse({"message": right_or_not, "correct_answer": data.correct_answer})
+@auth_router.post("/get-answer", status_code=status.HTTP_200_OK)
+async def get_example(data: AnswerToExample, session: Session = Depends(get_session)):
+    is_correct_answer, karma_user, level_user = await user.check_example_answer(data, session)
+    return JSONResponse({"message": is_correct_answer,
+                         "correct_answer": data.correct_answer,
+                         "karma_now": karma_user,
+                         "level_now": LEVELS[level_user]})
 
 
 @guest_router.put("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(data: ResetRequest, session: Session = Depends(get_session)):
     await user.reset_user_password(data, session)
     return JSONResponse({"message": "Your password has been updated."})
+
+
+@auth_router.put("/{change-name}", status_code=status.HTTP_200_OK)
+async def change_name(data: ChangeName, session: Session = Depends(get_session)):
+    await user.change_user_name(data, session)
+    return JSONResponse({"message": "Your name has been changed."})
 
 
 @auth_router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)

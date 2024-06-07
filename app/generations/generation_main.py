@@ -7,14 +7,14 @@ import sympy as sp
 
 
 # Главная функция для выбора типа и сложности примера
-def generate_example(difficulty="", example_type=""):
-    if difficulty == "":
-        difficulty = random.choice(['легкий', 'средний', 'сложный'])
-    if example_type == "":
+def generate_example(difficulty=None, example_type=None, operations=None):
+    if difficulty is None:
+        difficulty = random.choice([1, 2, 3])
+    if example_type is None:
         example_type = random.choice(['числовые примеры', 'уравнения', 'неравенства'])
 
     if example_type == 'числовые примеры':
-        question, answer = generate_numerical(difficulty)
+        question, answer = generate_numerical(difficulty, operations)
     elif example_type == 'уравнения':
         question, answer = generate_equation(difficulty)
     else:  # неравенства
@@ -25,8 +25,11 @@ def generate_example(difficulty="", example_type=""):
 
 # Функция для проверки ответа пользователя
 def check_answer(user_answer, correct_answer):
-    print(str(correct_answer))
-    if str(correct_answer) == user_answer.strip():
-        return "Правильно!"
-    else:
-        return "Неправильно."
+    if type(correct_answer) is list:
+        if [user_answer.split()] == correct_answer:
+            return True
+        elif str(correct_answer) == user_answer.strip():
+            return True
+    elif str(correct_answer) == user_answer.strip():
+        return True
+    return False

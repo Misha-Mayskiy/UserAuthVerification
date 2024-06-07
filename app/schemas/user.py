@@ -2,7 +2,6 @@ from pydantic import BaseModel, EmailStr
 
 
 class RegisterUserRequest(BaseModel):
-    name: str
     email: EmailStr
     password: str
 
@@ -22,13 +21,18 @@ class ResetRequest(BaseModel):
     password: str
 
 
+class ChangeName(BaseModel):
+    email: EmailStr
+    name: str
+
+
 class FiltersForGenerationExampleRequest(BaseModel):
-    token: str
-    example_type: str
-    difficulty: str
+    example_type: str = None
+    difficulty: int = None
+    operations: str = None
 
 
 class AnswerToExample(BaseModel):
-    token: str
+    email: EmailStr
     user_answer: str
     correct_answer: str
