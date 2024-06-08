@@ -2,13 +2,15 @@ from fastapi import APIRouter, BackgroundTasks, Depends, status, Header
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from typing import Dict, List
 
 from app.config.database import get_session
-from app.responses.user import UserResponse, LoginResponse
+from app.responses.user import UserResponse, LoginResponse, UserRatingsResponse
 from app.schemas.user import RegisterUserRequest, ResetRequest, VerifyUserRequest, EmailRequest, \
     FiltersForGenerationExampleRequest, AnswerToExample, ChangeName
 from app.services import user
-from app.config.security import get_current_user, oauth2_scheme, LEVELS
+from app.config.security import get_current_user, oauth2_scheme
+from app.services.user import get_top_users_by_difficulty
 
 user_router = APIRouter(
     prefix="/users",
@@ -62,17 +64,15 @@ async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks,
 
 @auth_router.post("/get-example", status_code=status.HTTP_200_OK)
 async def get_example(data: FiltersForGenerationExampleRequest):
-    example, answer = await user.get_example(data)
-    return JSONResponse({"example": example, "correct_answer": str(answer)})
+    example, answer, difficulty = await user.get_example(data)
+    return JSONResponse({"example": example, "correct_answer": str(answer), "difficulty": difficulty})
 
 
 @auth_router.post("/get-answer", status_code=status.HTTP_200_OK)
-async def get_example(data: AnswerToExample, session: Session = Depends(get_session)):
-    is_correct_answer, karma_user, level_user = await user.check_example_answer(data, session)
+async def check_answer(data: AnswerToExample, session: Session = Depends(get_session)):
+    is_correct_answer = await user.check_example_answer(data, session)
     return JSONResponse({"message": is_correct_answer,
-                         "correct_answer": data.correct_answer,
-                         "karma_now": karma_user,
-                         "level_now": LEVELS[level_user]})
+                         "correct_answer": data.correct_answer})
 
 
 @guest_router.put("/reset-password", status_code=status.HTTP_200_OK)
@@ -90,6 +90,11 @@ async def change_name(data: ChangeName, session: Session = Depends(get_session))
 @auth_router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def fetch_user(user=Depends(get_current_user)):
     return user
+
+
+@auth_router.get("/ratings", status_code=status.HTTP_200_OK, response_model=Dict[str, List[UserRatingsResponse]])
+async def read_top_users(session: Session = Depends(get_session)):
+    return get_top_users_by_difficulty(session)
 
 
 @auth_router.get("/{pk}", status_code=status.HTTP_200_OK, response_model=UserResponse)

@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
 import logging
+
+from sqlalchemy import desc
 from sqlalchemy.orm import joinedload
 from fastapi import HTTPException
 from app.config.security import generate_token, get_token_payload, hash_password, is_password_strong_enough, load_user, \
-    str_decode, str_encode, verify_password
+    str_decode, str_encode, verify_password, LEVELS
 from app.generations.generation_main import generate_example, check_answer
 from app.models.user import User, UserToken
+from app.responses.user import UserRatingsResponse
 from app.services.email import send_account_activation_confirmation_email, send_account_verification_email, \
     send_password_reset_email
 from app.utils.email_context import FORGOT_PASSWORD, USER_VERIFY_ACCOUNT
@@ -24,11 +27,8 @@ async def create_user_account(data, session, background_tasks):
         raise HTTPException(status_code=400, detail="Please provide a strong password.")
 
     user = User()
-    user.name = "Username"
     user.email = data.email
     user.password = hash_password(data.password)
-    user.karma = 0
-    user.level = 0
     user.is_active = False
     user.updated_at = datetime.utcnow()
     session.add(user)
@@ -210,6 +210,21 @@ async def fetch_user_detail(pk, session):
     raise HTTPException(status_code=400, detail="User does not exists.")
 
 
+def get_top_users_by_difficulty(session):
+    top_users = {}
+    levels = ["karma_low_level", "karma_medium_level", "karma_high_level"]
+    for level in levels:
+        users = session.query(User.name, getattr(User, level).label("problems_solved"), User.level) \
+                      .order_by(desc(getattr(User, level))) \
+                      .limit(3) \
+                      .all()
+        top_users[level] = [UserRatingsResponse(name=name,
+                                                level=LEVELS[user_level],
+                                                problems_solved=problems_solved)
+                            for name, problems_solved, user_level in users]
+    return top_users
+
+
 async def get_example(data):
     return generate_example(data.difficulty,
                             data.example_type,
@@ -228,19 +243,23 @@ async def check_example_answer(data, session):
     is_answer_correct = check_answer(data.user_answer, data.correct_answer)
 
     if is_answer_correct:
-        user.karma += 1
-        if user.karma < 21:
+        if data.difficulty == 1:
+            user.karma_low_level += 1
+        elif data.difficulty == 2:
+            user.karma_medium_level += 1
+        else:
+            user.karma_high_level += 1
+        user.main_karma += data.difficulty
+        if user.main_karma < 21:
             user.level = 0
-        elif user.karma < 41:
+        elif user.main_karma < 41:
             user.level = 1
-        elif user.karma < 81:
+        elif user.main_karma < 81:
             user.level = 2
         else:
             user.level = 3
 
-    karma_user = user.karma
-    level_user = user.level
     session.add(user)
     session.commit()
     session.refresh(user)
-    return is_answer_correct, karma_user, level_user
+    return is_answer_correct

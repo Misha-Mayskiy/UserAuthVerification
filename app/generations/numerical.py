@@ -4,6 +4,8 @@ import random
 def generate_numerical(level, operations=None):
     if operations is None:
         operations = ['+', '-', '*', '/']
+    else:
+        operations = " ".join(operations).split()
     if level == 1:
         num1, num2 = random.randint(1, 10), random.randint(1, 10)
     elif level == 2:

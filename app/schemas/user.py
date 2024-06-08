@@ -34,5 +34,6 @@ class FiltersForGenerationExampleRequest(BaseModel):
 
 class AnswerToExample(BaseModel):
     email: EmailStr
+    difficulty: int
     user_answer: str
     correct_answer: str

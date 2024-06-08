@@ -16,11 +16,11 @@ def generate_example(difficulty=None, example_type=None, operations=None):
     if example_type == 'числовые примеры':
         question, answer = generate_numerical(difficulty, operations)
     elif example_type == 'уравнения':
-        question, answer = generate_equation(difficulty)
+        question, answer = generate_equation(difficulty, operations)
     else:  # неравенства
         question, answer = generate_inequality(difficulty)
 
-    return question, answer
+    return str(question), answer, difficulty
 
 
 # Функция для проверки ответа пользователя

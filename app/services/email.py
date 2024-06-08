@@ -11,13 +11,12 @@ async def send_account_verification_email(user: User, background_tasks: Backgrou
     from app.config.security import hash_password
     string_context = user.get_context_string(context=USER_VERIFY_ACCOUNT)
     token = hash_password(string_context)
-    activate_url = f"{settings.FRONTEND_HOST}/auth/account-verify?token={token}&email={user.email}"
     data = {
         'app_name': settings.APP_NAME,
         "name": user.name,
-        'activate_url': activate_url
+        'activate_code': token
     }
-    subject = f"Account Verification - {settings.APP_NAME}"
+    subject = f"Активация аккаунта - {settings.APP_NAME}"
     await send_email(
         recipients=[user.email],
         subject=subject,
@@ -33,7 +32,7 @@ async def send_account_activation_confirmation_email(user: User, background_task
         "name": user.name,
         'login_url': f'{settings.FRONTEND_HOST}'
     }
-    subject = f"Welcome - {settings.APP_NAME}"
+    subject = f"Добро пожаловать - {settings.APP_NAME}"
     await send_email(
         recipients=[user.email],
         subject=subject,
@@ -47,13 +46,12 @@ async def send_password_reset_email(user: User, background_tasks: BackgroundTask
     from app.config.security import hash_password
     string_context = user.get_context_string(context=FORGOT_PASSWORD)
     token = hash_password(string_context)
-    reset_url = f"{settings.FRONTEND_HOST}/reset-password?token={token}&email={user.email}"
     data = {
         'app_name': settings.APP_NAME,
         "name": user.name,
-        'activate_url': reset_url,
+        'activate_code': token,
     }
-    subject = f"Reset Password - {settings.APP_NAME}"
+    subject = f"Сброс пароля - {settings.APP_NAME}"
     await send_email(
         recipients=[user.email],
         subject=subject,

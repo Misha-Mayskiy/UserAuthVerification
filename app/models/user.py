@@ -7,10 +7,13 @@ from sqlalchemy.orm import mapped_column, relationship
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(150), nullable=False, default="user" + str(id))
+    name = Column(String(150), nullable=False, server_default="NumericaUser")
     email = Column(String(255), unique=True, index=True)
     password = Column(String(100))
-    karma = Column(Integer, nullable=False, default=0)
+    karma_low_level = Column(Integer, nullable=False, default=0)
+    karma_medium_level = Column(Integer, nullable=False, default=0)
+    karma_high_level = Column(Integer, nullable=False, default=0)
+    main_karma = Column(Integer, nullable=False, default=0)
     level = Column(Integer, nullable=False, default=0)
     is_active = Column(Boolean, default=False)
     verified_at = Column(DateTime, nullable=True, default=None)
@@ -34,8 +37,7 @@ class UserToken(Base):
 
     user = relationship("User", back_populates="tokens")
 
-
-# class UserExample(Base):
+# class UserExample(Base): # сохраненные примеры пользователей
 #     __tablename__ = "user_examples"
 #     id = Column(Integer, primary_key=True, autoincrement=True)
 #     user_id = mapped_column(ForeignKey('users.id'))
