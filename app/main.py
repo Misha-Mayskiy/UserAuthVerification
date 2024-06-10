@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.routes import user
+from fastapi.middleware.cors import CORSMiddleware
 
 
 def create_application():
@@ -11,6 +12,13 @@ def create_application():
 
 
 app = create_application()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
