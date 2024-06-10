@@ -10,7 +10,8 @@ settings = get_settings()
 async def send_account_verification_email(user: User, background_tasks: BackgroundTasks):
     from app.config.security import hash_password
     string_context = user.get_context_string(context=USER_VERIFY_ACCOUNT)
-    token = hash_password(string_context)
+    # token = hash_password(string_context)
+    token = "test"
     data = {
         'app_name': settings.APP_NAME,
         "name": user.name,

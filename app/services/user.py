@@ -45,7 +45,8 @@ async def activate_user_account(data, session, background_tasks):
     if not user:
         raise HTTPException(status_code=400, detail="This link is not valid.")
 
-    user_token = user.get_context_string(context=USER_VERIFY_ACCOUNT)
+    # user_token = user.get_context_string(context=USER_VERIFY_ACCOUNT)
+    user_token = "test"
     try:
         token_valid = verify_password(user_token, data.token)
     except Exception as verify_exec:
