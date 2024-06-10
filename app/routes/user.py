@@ -62,13 +62,13 @@ async def forgot_password(data: EmailRequest, background_tasks: BackgroundTasks,
     return JSONResponse({"message": "A email with password reset link has been sent to you."})
 
 
-@auth_router.post("/get-example", status_code=status.HTTP_200_OK)
+@guest_router.post("/get-example", status_code=status.HTTP_200_OK)
 async def get_example(data: FiltersForGenerationExampleRequest):
     example, answer, difficulty = await user.get_example(data)
     return JSONResponse({"example": example, "correct_answer": str(answer), "difficulty": difficulty})
 
 
-@auth_router.post("/get-answer", status_code=status.HTTP_200_OK)
+@guest_router.post("/get-answer", status_code=status.HTTP_200_OK)
 async def check_answer(data: AnswerToExample, session: Session = Depends(get_session)):
     is_correct_answer = await user.check_example_answer(data, session)
     return JSONResponse({"message": is_correct_answer,
@@ -81,22 +81,22 @@ async def reset_password(data: ResetRequest, session: Session = Depends(get_sess
     return JSONResponse({"message": "Your password has been updated."})
 
 
-@auth_router.put("/{change-name}", status_code=status.HTTP_200_OK)
+@guest_router.put("/{change-name}", status_code=status.HTTP_200_OK)
 async def change_name(data: ChangeName, session: Session = Depends(get_session)):
     await user.change_user_name(data, session)
     return JSONResponse({"message": "Your name has been changed."})
 
 
-@auth_router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
+@guest_router.get("/me", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def fetch_user(user=Depends(get_current_user)):
     return user
 
 
-@auth_router.get("/ratings", status_code=status.HTTP_200_OK, response_model=Dict[str, List[UserRatingsResponse]])
+@guest_router.get("/ratings", status_code=status.HTTP_200_OK, response_model=Dict[str, List[UserRatingsResponse]])
 async def read_top_users(session: Session = Depends(get_session)):
     return get_top_users_by_difficulty(session)
 
 
-@auth_router.get("/{pk}", status_code=status.HTTP_200_OK, response_model=UserResponse)
+@guest_router.get("/{pk}", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user_info(pk, session: Session = Depends(get_session)):
     return await user.fetch_user_detail(pk, session)
